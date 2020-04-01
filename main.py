@@ -4,11 +4,11 @@ import datetime
 from data import db_session
 from data.users_model import User
 from data.jobs_model import Jobs
-from data.departments import Departments
+from data.departments import Department
 from data.news import News
 
 # импорт нужных форм
-from forms import RegisterForm, LoginForm, NewsForm, JobForm
+from forms import RegisterForm, LoginForm, NewsForm, JobForm, DepForm
 
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
@@ -188,6 +188,92 @@ def news_delete(id):
     else:
         abort(404)
     return redirect('/blog')
+
+
+# список департаментов
+@app.route("/departments")
+def departments():
+    session = db_session.create_session()
+    deps = session.query(Department).all()
+    return render_template("departments.html", title="List of Departments", deps=deps)
+
+
+# добавление департамента
+@app.route('/add_dep', methods=['GET', 'POST'])
+@login_required
+def add_dep():
+    form = DepForm()
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        dep = Department()
+        dep.title = form.title.data
+        dep.chief = form.chief_id.data
+        dep.members = form.members.data
+        dep.email = form.email.data
+        dep.creator = current_user.id
+        chief = session.query(User).filter(User.id == form.chief_id.data).first()
+        chief.deps.append(dep)
+        session.merge(current_user)
+        session.commit()
+        return redirect('/departments')
+    return render_template('add_dep.html', title='Add a Department',
+                           form=form)
+
+
+# редактирование департамента
+@app.route('/add_dep/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_dep(id):
+    form = DepForm()
+    if request.method == "GET":
+        session = db_session.create_session()
+        if current_user.id == 1:
+            dep = session.query(Department).filter(Department.id == id).first()
+        else:
+            dep = session.query(Department).filter(Department.id == id,
+                                             Department.creator == current_user.id).first()
+        if dep:
+            form.title.data = dep.title
+            form.chief_id.data = dep.chief
+            form.members.data = dep.members
+            form.email.data = dep.email
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        if current_user.id == 1:
+            dep = session.query(Department).filter(Department.id == id).first()
+        else:
+            dep = session.query(Department).filter(Department.id == id,
+                                             Department.creator == current_user.id).first()
+        if dep:
+            dep.title = form.title.data
+            dep.chief = form.chief_id.data
+            dep.members = form.members.data
+            dep.email = form.email.data
+            session.commit()
+            return redirect('/departments')
+        else:
+            abort(404)
+    return render_template('add_dep.html', title='Department edit', form=form)
+
+
+# удаление департамента
+@app.route('/dep_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def dep_delete(id):
+    session = db_session.create_session()
+    if current_user.id == 1:
+        dep = session.query(Department).filter(Department.id == id).first()
+    else:
+        dep = session.query(Department).filter(Department.id == id,
+                                         Department.creator == current_user.id).first()
+    if dep:
+        session.delete(dep)
+        session.commit()
+    else:
+        abort(404)
+    return redirect('/departments')
 
 
 # вход на сайт

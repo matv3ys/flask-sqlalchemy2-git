@@ -3,7 +3,7 @@ from sqlalchemy import orm
 from .db_session import SqlAlchemyBase
 
 
-class Departments(SqlAlchemyBase):
+class Department(SqlAlchemyBase):
 
     __tablename__ = 'departments'
 
@@ -15,5 +15,6 @@ class Departments(SqlAlchemyBase):
     members = sqlalchemy.Column(sqlalchemy.String, sqlalchemy.ForeignKey("jobs.collaborators"),
                                 nullable=True)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True, nullable=True)
+    creator = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     user = orm.relation("User")
     jobs = orm.relation("Jobs")

@@ -29,3 +29,4 @@ class User(SqlAlchemyBase, UserMixin):
     modified_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     news = orm.relation("News", back_populates='user')
     jobs = orm.relation("Jobs", back_populates='user')
+    deps = orm.relation("Department", back_populates='user')
