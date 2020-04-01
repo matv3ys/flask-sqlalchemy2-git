@@ -55,6 +55,46 @@ def add_job():
                            form=form)
 
 
+# редактирование работы
+@app.route('/addjob/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_job(id):
+    form = JobForm()
+    if request.method == "GET":
+        session = db_session.create_session()
+        if current_user.id == 1:
+            job = session.query(Jobs).filter(Jobs.id == id).first()
+        else:
+            job = session.query(Jobs).filter(Jobs.id == id,
+                                              Jobs.user == current_user).first()
+        if job:
+            form.title.data = job.job
+            form.leader_id.data = job.team_leader
+            form.work_size.data = job.work_size
+            form.collaborators.data = job.collaborators
+            form.is_finished.data = job.is_finished
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        session = db_session.create_session()
+        if current_user.id == 1:
+            job = session.query(Jobs).filter(Jobs.id == id).first()
+        else:
+            job = session.query(Jobs).filter(Jobs.id == id,
+                                             Jobs.user == current_user).first()
+        if job:
+            job.job = form.title.data
+            job.team_leader = form.leader_id.data
+            job.work_size = form.work_size.data
+            job.collaborators = form.collaborators.data
+            job.is_finished = form.is_finished.data
+            session.commit()
+            return redirect('/')
+        else:
+            abort(404)
+    return render_template('add_job.html', title='Job edit', form=form)
+
+
 # блог с новостями
 @app.route("/blog")
 def blog():

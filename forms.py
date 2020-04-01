@@ -19,10 +19,10 @@ class RegisterForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
-    email = EmailField('Почта', validators=[DataRequired()])
-    password = PasswordField('Пароль', validators=[DataRequired()])
-    remember_me = BooleanField('Запомнить меня')
-    submit = SubmitField('Войти')
+    email = EmailField('E-Mail', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember_me = BooleanField('Remember me')
+    submit = SubmitField('Log in')
 
 
 class NewsForm(FlaskForm):
