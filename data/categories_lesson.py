@@ -10,7 +10,7 @@ association_table = sqlalchemy.Table('association', SqlAlchemyBase.metadata,
 )
 
 
-class Category(SqlAlchemyBase):
+class CategoryNews(SqlAlchemyBase):
 
     __tablename__ = 'category'
 

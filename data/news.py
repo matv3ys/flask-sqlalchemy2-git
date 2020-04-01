@@ -21,6 +21,6 @@ class News(SqlAlchemyBase):
     user_id = sqlalchemy.Column(sqlalchemy.Integer,
                                 sqlalchemy.ForeignKey("users.id"))
     user = orm.relation('User')
-    categories = orm.relation("Category",
+    categories = orm.relation("CategoryNews",
                               secondary="association",
                               backref="news")

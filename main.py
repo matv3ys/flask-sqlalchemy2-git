@@ -6,11 +6,12 @@ from data.users_model import User
 from data.jobs_model import Jobs
 from data.departments import Department
 from data.news import News
-
+from data.categories import CategoryJob
 # импорт нужных форм
 from forms import RegisterForm, LoginForm, NewsForm, JobForm, DepForm
 
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+import sqlalchemy
 
 # настройки приложения
 
@@ -48,7 +49,16 @@ def add_job():
         job.collaborators = form.collaborators.data
         job.is_finished = form.is_finished.data
         job.creator = current_user.id
-        current_user.jobs.append(job)
+
+        category_id = form.category.data
+        category = session.query(CategoryJob).filter(CategoryJob.id == category_id).first()
+        job.categories.append(category)
+        session.commit()
+
+        try:
+            current_user.jobs.append(job)
+        except sqlalchemy.orm.exc.DetachedInstanceError:
+            pass
         session.merge(current_user)
         session.commit()
         return redirect('/')
@@ -74,6 +84,7 @@ def edit_job(id):
             form.work_size.data = job.work_size
             form.collaborators.data = job.collaborators
             form.is_finished.data = job.is_finished
+            form.category.data = job.categories[0].id
         else:
             abort(404)
     if form.validate_on_submit():
@@ -89,6 +100,17 @@ def edit_job(id):
             job.work_size = form.work_size.data
             job.collaborators = form.collaborators.data
             job.is_finished = form.is_finished.data
+
+            category_id = form.category.data
+            category = session.query(CategoryJob).filter(CategoryJob.id == category_id).first()
+            job.categories[0] = category
+            session.commit()
+
+            try:
+                current_user.jobs.append(job)
+            except sqlalchemy.orm.exc.DetachedInstanceError:
+                pass
+
             session.commit()
             return redirect('/')
         else:

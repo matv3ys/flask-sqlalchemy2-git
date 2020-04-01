@@ -19,3 +19,6 @@ class Jobs(SqlAlchemyBase):
     is_finished = sqlalchemy.Column(sqlalchemy.Boolean, nullable=True)
     creator = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     user = orm.relation('User')
+    categories = orm.relation("CategoryJob",
+                              secondary="jobs_to_category",
+                              backref="jobs")
