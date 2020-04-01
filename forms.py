@@ -26,7 +26,16 @@ class LoginForm(FlaskForm):
 
 
 class NewsForm(FlaskForm):
-    title = StringField('Заголовок', validators=[DataRequired()])
-    content = TextAreaField("Содержание")
-    is_private = BooleanField("Личное")
-    submit = SubmitField('Применить')
+    title = StringField('Title', validators=[DataRequired()])
+    content = TextAreaField("Content")
+    is_private = BooleanField("Private")
+    submit = SubmitField('Submit')
+
+
+class JobForm(FlaskForm):
+    title = StringField("Job Title", validators=[DataRequired()])
+    leader_id = IntegerField("Team Leader Id", validators=[DataRequired()])
+    work_size = IntegerField("WorkSize", validators=[DataRequired()])
+    collaborators = StringField("Collaborators", validators=[DataRequired()])
+    is_finished = BooleanField("Is job finished?")
+    submit = SubmitField('Submit')
