@@ -47,6 +47,7 @@ def add_job():
         job.work_size = form.work_size.data
         job.collaborators = form.collaborators.data
         job.is_finished = form.is_finished.data
+        job.creator = current_user.id
         current_user.jobs.append(job)
         session.merge(current_user)
         session.commit()
@@ -66,7 +67,7 @@ def edit_job(id):
             job = session.query(Jobs).filter(Jobs.id == id).first()
         else:
             job = session.query(Jobs).filter(Jobs.id == id,
-                                             Jobs.user == current_user).first()
+                                             Jobs.creator == current_user.id).first()
         if job:
             form.title.data = job.job
             form.leader_id.data = job.team_leader
@@ -81,7 +82,7 @@ def edit_job(id):
             job = session.query(Jobs).filter(Jobs.id == id).first()
         else:
             job = session.query(Jobs).filter(Jobs.id == id,
-                                             Jobs.user == current_user).first()
+                                             Jobs.creator == current_user.id).first()
         if job:
             job.job = form.title.data
             job.team_leader = form.leader_id.data
@@ -104,7 +105,7 @@ def job_delete(id):
         job = session.query(Jobs).filter(Jobs.id == id).first()
     else:
         job = session.query(Jobs).filter(Jobs.id == id,
-                                         Jobs.user == current_user).first()
+                                         Jobs.creator == current_user.id).first()
     if job:
         session.delete(job)
         session.commit()
