@@ -66,7 +66,7 @@ def edit_job(id):
             job = session.query(Jobs).filter(Jobs.id == id).first()
         else:
             job = session.query(Jobs).filter(Jobs.id == id,
-                                              Jobs.user == current_user).first()
+                                             Jobs.user == current_user).first()
         if job:
             form.title.data = job.job
             form.leader_id.data = job.team_leader
@@ -93,6 +93,24 @@ def edit_job(id):
         else:
             abort(404)
     return render_template('add_job.html', title='Job edit', form=form)
+
+
+# удаление работы
+@app.route('/job_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def job_delete(id):
+    session = db_session.create_session()
+    if current_user.id == 1:
+        job = session.query(Jobs).filter(Jobs.id == id).first()
+    else:
+        job = session.query(Jobs).filter(Jobs.id == id,
+                                         Jobs.user == current_user).first()
+    if job:
+        session.delete(job)
+        session.commit()
+    else:
+        abort(404)
+    return redirect('/')
 
 
 # блог с новостями
@@ -155,6 +173,7 @@ def edit_news(id):
             abort(404)
     return render_template('news.html', title='News edit', form=form)
 
+
 # удаление новостей
 @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -185,6 +204,7 @@ def login():
                                form=form)
     return render_template('login.html', title='Sign in', form=form)
 
+
 # выход пользователя
 @app.route('/logout')
 @login_required
@@ -192,11 +212,13 @@ def logout():
     logout_user()
     return redirect("/")
 
+
 # загрузка текущего пользователя
 @login_manager.user_loader
 def load_user(user_id):
     session = db_session.create_session()
     return session.query(User).get(user_id)
+
 
 # регистрация пользователя
 @app.route('/register', methods=['GET', 'POST'])
