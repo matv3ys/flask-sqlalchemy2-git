@@ -1,1 +1,1 @@
-# flask-sqlalchemy2-git
+# flask-sqlalchemy-git
