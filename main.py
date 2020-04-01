@@ -59,6 +59,8 @@ def add_job():
             current_user.jobs.append(job)
         except sqlalchemy.orm.exc.DetachedInstanceError:
             pass
+        except sqlalchemy.exc.InvalidRequestError:
+            pass
         session.merge(current_user)
         session.commit()
         return redirect('/')
@@ -109,6 +111,8 @@ def edit_job(id):
             try:
                 current_user.jobs.append(job)
             except sqlalchemy.orm.exc.DetachedInstanceError:
+                pass
+            except sqlalchemy.exc.InvalidRequestError:
                 pass
 
             session.commit()
