@@ -1,4 +1,4 @@
-from . import users_model
-from . import jobs_model
-from . import categories_lesson
+from . import users
+from . import jobs
+from . import categories_news
 from . import categories

@@ -2,8 +2,8 @@ from flask import Flask, render_template, redirect
 from flask import request, make_response, abort
 import datetime
 from data import db_session
-from data.users_model import User
-from data.jobs_model import Jobs
+from data.users import User
+from data.jobs import Jobs
 from data.departments import Department
 from data.news import News
 from data.categories import CategoryJob
@@ -167,7 +167,7 @@ def add_news():
         session.merge(current_user)
         session.commit()
         return redirect('/blog')
-    return render_template('news.html', title='News add',
+    return render_template('add_news.html', title='News add',
                            form=form)
 
 
@@ -198,7 +198,7 @@ def edit_news(id):
             return redirect('/blog')
         else:
             abort(404)
-    return render_template('news.html', title='News edit', form=form)
+    return render_template('add_news.html', title='News edit', form=form)
 
 
 # удаление новостей
